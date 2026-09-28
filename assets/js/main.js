@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
         p.querySelector('.check')?.remove();
       });
       pill.classList.add('selected');
+      const radio = pill.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
       const chk = document.createElement('span');
       chk.className = 'check';
       chk.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -83,26 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (noteEl) noteEl.textContent = payable.toFixed(2);
   }
 
-  // Chat send
-  const chatForm = document.querySelector('.chat-input');
+  // Chat: the .chat-input form posts for real to actions/chat_send.php,
+  // this just keeps the scroll pinned to the latest message on load.
   const chatBody = document.querySelector('.chat-body');
-  if (chatForm && chatBody) {
-    const input = chatForm.querySelector('input');
-    const send = () => {
-      const val = input.value.trim();
-      if (!val) return;
-      const msg = document.createElement('div');
-      msg.className = 'msg me';
-      const now = new Date();
-      const time = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) +
-        ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      msg.innerHTML = `<div class="avatar"></div><div class="bubble">${val}<span class="time">${time}</span></div>`;
-      chatBody.appendChild(msg);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      input.value = '';
-    };
-    chatForm.querySelector('button').addEventListener('click', send);
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
   }
 
   // Simple price range slider (visual only)
