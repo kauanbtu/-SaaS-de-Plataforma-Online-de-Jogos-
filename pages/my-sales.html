@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offer List — My Sales — Gamers Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="../index.html" class="brand"><span class="logo-mark">GA</span> GAMERS ARENA</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li class="dropdown"><a href="my-sales.html" class="active">My Sales <i class="fa-solid fa-chevron-down" style="font-size:.6rem"></i>
+        <div class="dropdown-menu">
+          <a href="my-sales.html">Offer List</a>
+          <a href="conversation.html">Conversation</a>
+        </div>
+      </a></li>
+      <li class="dropdown"><a href="my-orders.html">My Orders <i class="fa-solid fa-chevron-down" style="font-size:.6rem"></i>
+        <div class="dropdown-menu">
+          <a href="my-orders.html">Order List</a>
+          <a href="conversation.html">Conversation</a>
+        </div>
+      </a></li>
+      <li><a href="payout.html">Payout</a></li>
+      <li class="dropdown"><a href="history.html">History <i class="fa-solid fa-chevron-down" style="font-size:.6rem"></i>
+        <div class="dropdown-menu">
+          <a href="history.html">Purchase History</a>
+          <a href="history.html">Sales History</a>
+        </div>
+      </a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#" class="icon-btn"><i class="fa-solid fa-bell"></i><span class="badge">1</span></a>
+      <a href="#" class="icon-btn"><i class="fa-solid fa-user"></i></a>
+      <button class="hamburger"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero"><div class="container"><h1>OFFER LIST</h1></div></section>
+
+<section class="section">
+  <div class="container">
+    <div class="panel">
+      <div class="offer-toolbar">
+        <select><option>My All Post</option><option>Accepted</option><option>Pending</option><option>Rejected</option></select>
+        <input type="text" placeholder="Type user or message">
+        <input type="text" placeholder="mm / dd / yyyy" onfocus="(this.type='date')">
+        <button class="btn btn-accent btn-sm"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <span style="color:var(--text-dim);font-size:.85rem;white-space:nowrap"><i class="fa-solid fa-arrow-down-wide-short"></i> Sort By</span>
+      </div>
+
+      <div class="offer-item item-menu-wrap" style="position:relative">
+        <div class="avatar">HS</div>
+        <div class="body">
+          <div class="flex between center">
+            <div>
+              <h5>Hlw Sam <a href="id-details.html">Carrom Pool Level 8</a></h5>
+              <span class="price">$48</span>
+              <span class="status rejected" style="margin-left:10px">Rejected</span>
+              <span class="time" style="margin-left:10px"><i class="fa-regular fa-clock"></i> 3 weeks ago</span>
+            </div>
+            <button class="item-menu-btn icon-btn" style="border:none;background:none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+          </div>
+          <p>Please Accept</p>
+          <div class="item-menu panel" style="display:none;position:absolute;right:0;top:36px;padding:8px;min-width:150px;z-index:20">
+            <a href="conversation.html" style="display:block;padding:8px 10px;font-size:.82rem;color:var(--text-dim)">View Conversation</a>
+            <a href="#" style="display:block;padding:8px 10px;font-size:.82rem;color:var(--danger)">Delete Offer</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="offer-item item-menu-wrap" style="position:relative">
+        <div class="avatar">HS</div>
+        <div class="body">
+          <div class="flex between center">
+            <div>
+              <h5>Hlw Sam <a href="id-details.html">PUBG Level 9</a></h5>
+              <span class="price">$400</span>
+              <span class="status accepted" style="margin-left:10px">Accepted</span>
+              <span class="time" style="margin-left:10px"><i class="fa-regular fa-clock"></i> 2 weeks ago</span>
+            </div>
+            <a href="conversation.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-comment"></i> Conversation</a>
+          </div>
+          <p>Please accept</p>
+        </div>
+      </div>
+
+      <div class="offer-item item-menu-wrap" style="position:relative">
+        <div class="avatar">HS</div>
+        <div class="body">
+          <div class="flex between center">
+            <div>
+              <h5>Hlw Sam <a href="id-details.html">PUBG Game Level 60</a></h5>
+              <span class="price">$29</span>
+              <span class="status accepted" style="margin-left:10px">Accepted</span>
+              <span class="time" style="margin-left:10px"><i class="fa-regular fa-clock"></i> 2 weeks ago</span>
+            </div>
+            <button class="item-menu-btn icon-btn" style="border:none;background:none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+          </div>
+          <p>Please Accept, I have very much interested this game id. Please consider my proposal.</p>
+        </div>
+      </div>
+
+      <p style="color:var(--text-dim);font-size:.82rem;margin-top:16px">Showing all 3 results</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="../index.html" class="brand"><span class="logo-mark">GA</span> GAMERS ARENA</a>
+        <p>Need to get in touch with us? Please contact with us throw below detail service.</p>
+        <ul class="footer-contact">
+          <li><i class="fa-solid fa-phone"></i> +880 654 321 233</li>
+          <li><i class="fa-solid fa-envelope"></i> contact@bugfinder.net</li>
+          <li><i class="fa-solid fa-location-dot"></i> 457 Morningview, New York USA</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Useful Links</h4>
+        <ul class="footer-links">
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Terms &amp; Conditions</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Subscribe Newsletter</h4>
+        <form class="newsletter" onsubmit="return false">
+          <input type="email" placeholder="Enter Email" required>
+          <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+        <div class="socials">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-skype"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Copyright © 2022 <a href="#">Bug Finder</a> All Rights Reserved</span>
+      <span class="langs"><a href="#">English</a><a href="#">Spanish</a></span>
+    </div>
+  </div>
+</footer>
+
+<a href="#" class="back-top"><i class="fa-solid fa-arrow-up"></i></a>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
