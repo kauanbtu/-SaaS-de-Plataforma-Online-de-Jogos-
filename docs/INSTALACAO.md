@@ -48,14 +48,37 @@ APP_ENV=production
 
 STRIPE_PUBLIC_KEY=
 STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 ```
 
-> **Sem chaves da Stripe**, o checkout funciona em **modo demonstração**: a
-> compra é confirmada automaticamente, sem cobrança real, só para você testar
-> o fluxo. Para cobrar de verdade, crie uma conta em
-> [stripe.com](https://stripe.com), pegue as chaves em
-> [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys) e
-> cole-as em `/admin` → Configurações (ou no `.env`).
+> **Sem chaves da Stripe**, o checkout fica **bloqueado** (nenhuma compra é
+> liberada) até você configurar pagamentos — o site nunca entrega produtos
+> de graça por padrão. Para testar o fluxo completo sem cobrar de verdade,
+> ative manualmente o **modo demonstração** em `/admin/settings.php`
+> (desligado por padrão; o painel mostra um aviso permanente enquanto
+> estiver ativo — desligue antes de divulgar o site). Para cobrar de
+> verdade, crie uma conta em [stripe.com](https://stripe.com), pegue as
+> chaves em [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys)
+> e cole-as em `/admin` → Configurações (ou aqui no `.env` — quando
+> preenchidas no `.env`, elas têm prioridade sobre o painel).
+>
+> Com a moeda do site definida como `BRL`, o **Pix** é oferecido
+> automaticamente como forma de pagamento ao lado do cartão (requer conta
+> Stripe habilitada para o Brasil).
+
+### 4.1 Webhook da Stripe (recomendado)
+
+Sem webhook, a compra só é confirmada quando o comprador volta ao site
+depois de pagar. Se ele fechar a aba antes disso, o pedido fica pendente.
+Para evitar isso:
+
+1. Em [dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks), crie um endpoint apontando para:
+   ```
+   https://seudominio.com/actions/stripe_webhook.php
+   ```
+2. Selecione o evento `checkout.session.completed`.
+3. Copie o "signing secret" (`whsec_...`) gerado e cole em `STRIPE_WEBHOOK_SECRET`
+   no `.env`, ou em `/admin` → Configurações.
 
 ## 5. Acessar o site
 
@@ -67,14 +90,15 @@ Login administrativo padrão:
 - **E-mail:** `admin@example.com`
 - **Senha:** `ChangeMe123!`
 
-**Troque essa senha imediatamente** após o primeiro acesso (crie um novo
-usuário admin pelo banco ou peça suporte para o fluxo de "esqueci senha" —
-ver seção 7).
+**A troca dessa senha é obrigatória**: no primeiro login, o sistema
+redireciona automaticamente para a tela de troca de senha e bloqueia
+qualquer outra página até uma nova senha ser definida — não é preciso
+lembrar de trocar manualmente.
 
 ## 6. Primeiros passos no painel admin
 
 1. **Configurações** (`/admin/settings.php`): defina nome do site, telefone,
-   e-mail, endereço e (opcionalmente) as chaves da Stripe.
+   e-mail, endereço, moeda e (opcionalmente) as chaves da Stripe.
 2. **Produtos** (`/admin/products.php`): cadastre seus gift cards, vouchers e
    pacotes de recarga, com os respectivos preços.
 3. **Estoque** (`/admin/stock.php`): cole os códigos digitais (um por linha)
@@ -88,12 +112,16 @@ ver seção 7).
 
 ## 7. Segurança pós-instalação
 
-- Troque a senha do usuário admin padrão.
+- A troca da senha do admin padrão já é forçada automaticamente (item 5) —
+  não pule essa etapa no primeiro acesso.
 - Restrinja o arquivo `.env` (permissão `600`) e confirme que ele **não**
   está acessível publicamente (`https://seudominio.com/.env` deve dar 403/404
   — na maioria dos hosts PHP isso já é bloqueado por padrão porque o arquivo
   não é interpretado, mas confira).
 - Ative HTTPS (a maioria dos hosts oferece Let's Encrypt grátis).
+- Configure o webhook da Stripe (seção 4.1) antes de divulgar o site.
+- Confirme que o **modo demonstração** está desligado em
+  `/admin/settings.php` antes de divulgar o site publicamente.
 - Faça backup regular do banco de dados.
 
 ## 8. Problemas comuns
@@ -102,8 +130,9 @@ ver seção 7).
 |---|---|---|
 | Tela "Não foi possível conectar ao banco de dados" | `.env` errado ou schema não importado | Revise `DB_*` no `.env` e rode o import do passo 3 |
 | Formulários retornam "Sessão expirada" | Cache/proxy servindo página antiga | Recarregue a página antes de enviar o formulário |
-| Compra fica "pending" e não entrega código | Estoque zerado para aquele pacote | Adicione códigos em `/admin/stock.php` |
-| Checkout não cobra de verdade | Chaves da Stripe não configuradas (modo demonstração) | Configure em `/admin/settings.php` |
+| Compra fica "pending" e não entrega código | Estoque zerado para aquele pacote, ou webhook não configurado e o comprador fechou a aba antes de voltar | Adicione códigos em `/admin/stock.php`; configure o webhook (seção 4.1) |
+| Checkout diz "pagamentos ainda não configurados" | Nenhuma chave da Stripe definida e modo demonstração desligado (comportamento padrão, proposital) | Configure a Stripe ou ative o modo demonstração em `/admin/settings.php` |
+| Sistema pede para trocar a senha e não deixa acessar mais nada | Comportamento esperado da conta com senha padrão/temporária | Troque a senha na tela exibida — o acesso volta ao normal em seguida |
 
 ## 9. Sobre a documentação em vídeo
 

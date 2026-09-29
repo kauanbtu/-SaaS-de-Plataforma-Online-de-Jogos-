@@ -23,26 +23,32 @@ if (!$order || $order['status'] !== 'awaiting_payment') {
 }
 
 if (stripe_configured()) {
-    $successUrl = base_url('actions/order_confirm.php') . '?order_id=' . $orderId . '&session_id={CHECKOUT_SESSION_ID}';
+    $successUrl = base_url('actions/order_confirm.php') . '?order_id=' . $orderId;
     $cancelUrl  = base_url('pages/my-orders.php');
 
     try {
-        $checkoutUrl = stripe_create_checkout_session($order['title'], (float) $order['amount'], $successUrl, $cancelUrl);
+        $session = stripe_create_checkout_session($order['title'], (float) $order['amount'], $successUrl, $cancelUrl);
     } catch (Throwable $e) {
-        $checkoutUrl = null;
+        $session = null;
     }
 
-    if ($checkoutUrl) {
-        redirect($checkoutUrl);
+    if ($session) {
+        $pdo->prepare('UPDATE orders SET stripe_session_id = ? WHERE id = ?')->execute([$session['id'], $orderId]);
+        redirect($session['url']);
     }
 
     flash('error', 'Não foi possível iniciar o pagamento com a Stripe.');
     redirect('/pages/my-orders.php');
 }
 
-// Modo demonstração: confirma e credita o vendedor imediatamente.
+if (setting('demo_mode', '0') !== '1') {
+    flash('error', 'Pagamentos ainda não configurados neste site. Contate o suporte.');
+    redirect('/pages/my-orders.php');
+}
+
+// Modo demonstração — precisa ser ativado manualmente em /admin/settings.php.
 $pdo->beginTransaction();
-$pdo->prepare('UPDATE orders SET status = "delivered" WHERE id = ?')->execute([$orderId]);
+$pdo->prepare('UPDATE orders SET status = "delivered", payment_ref = "demo" WHERE id = ?')->execute([$orderId]);
 $pdo->prepare('UPDATE users SET balance = balance + ? WHERE id = ?')->execute([$order['amount'], $order['seller_id']]);
 $pdo->commit();
 

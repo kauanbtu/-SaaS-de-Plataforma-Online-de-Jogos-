@@ -4,6 +4,8 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/stripe.php';
 require_once __DIR__ . '/../includes/delivery.php';
 
+$user = require_login('/pages/sign-in.php');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('/index.php');
 }
@@ -26,8 +28,6 @@ if (!$package) {
     redirect($returnTo);
 }
 
-$user = current_user();
-
 $discountRate = (float) setting('discount_rate', '0.15');
 $subtotal = (string) $package['price'];
 $discount = bcmul($subtotal, (string) $discountRate, 2);
@@ -38,7 +38,7 @@ $stmt = $pdo->prepare(
      VALUES (?, ?, ?, ?, ?, ?, ?, "pending")'
 );
 $stmt->execute([
-    $user['id'] ?? null,
+    $user['id'],
     $packageId,
     $playerId !== '' ? $playerId : null,
     $subtotal,
@@ -49,17 +49,21 @@ $stmt->execute([
 $purchaseId = (int) $pdo->lastInsertId();
 
 if (stripe_configured()) {
-    $successUrl = base_url('actions/purchase_confirm.php') . '?purchase_id=' . $purchaseId . '&session_id={CHECKOUT_SESSION_ID}';
+    // O session_id NÃO entra mais na success_url: a confirmação usa
+    // exclusivamente o stripe_session_id gravado abaixo, nunca um valor
+    // vindo da URL do navegador (ver includes/payments.php).
+    $successUrl = base_url('actions/purchase_confirm.php') . '?purchase_id=' . $purchaseId;
     $cancelUrl  = base_url(ltrim($returnTo, '/'));
 
     try {
-        $checkoutUrl = stripe_create_checkout_session($package['product_name'] . ' — ' . $package['label'], (float) $payable, $successUrl, $cancelUrl);
+        $session = stripe_create_checkout_session($package['product_name'] . ' — ' . $package['label'], (float) $payable, $successUrl, $cancelUrl);
     } catch (Throwable $e) {
-        $checkoutUrl = null;
+        $session = null;
     }
 
-    if ($checkoutUrl) {
-        redirect($checkoutUrl);
+    if ($session) {
+        $pdo->prepare('UPDATE purchases SET stripe_session_id = ? WHERE id = ?')->execute([$session['id'], $purchaseId]);
+        redirect($session['url']);
     }
 
     $pdo->prepare('UPDATE purchases SET status = "failed" WHERE id = ?')->execute([$purchaseId]);
@@ -67,10 +71,17 @@ if (stripe_configured()) {
     redirect($returnTo);
 }
 
-// Modo demonstração: sem chave da Stripe configurada em /admin, a compra é
-// confirmada instantaneamente para fins de teste local (sem cobrança real).
+if (setting('demo_mode', '0') !== '1') {
+    $pdo->prepare('UPDATE purchases SET status = "failed" WHERE id = ?')->execute([$purchaseId]);
+    flash('error', 'Pagamentos ainda não configurados neste site. Contate o suporte.');
+    redirect($returnTo);
+}
+
+// Modo demonstração — precisa ser ativado manualmente em
+// /admin/settings.php (desligado por padrão). Nunca ative em produção:
+// toda compra é confirmada sem cobrança real, só para testar o fluxo.
 $pdo->prepare('UPDATE purchases SET status = "paid", payment_ref = "demo" WHERE id = ?')->execute([$purchaseId]);
-$code = deliver_stock_code($pdo, $packageId, $purchaseId, $user['id'] ?? null);
+$code = deliver_stock_code($pdo, $packageId, $purchaseId, $user['id']);
 
 if ($code === null) {
     flash('error', 'Pagamento confirmado, mas o estoque deste pacote está esgotado. A equipe fará a entrega manual em breve.');

@@ -36,7 +36,7 @@ require __DIR__ . '/../includes/header.php';
             <td>#ORD-<?= (int) $o['id'] ?></td>
             <td><?= e($o['title']) ?></td>
             <td><?= e($o['seller_name']) ?></td>
-            <td>$<?= money((float) $o['amount']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $o['amount']) ?></td>
             <td><span class="status <?= in_array($o['status'], ['paid','delivered']) ? 'accepted' : ($o['status'] === 'cancelled' ? 'rejected' : 'pending') ?>"><?= e($o['status']) ?></span></td>
             <td><?= e(date('d/m/Y', strtotime($o['created_at']))) ?></td>
             <td class="flex gap-10">

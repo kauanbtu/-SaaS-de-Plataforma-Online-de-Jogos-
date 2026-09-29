@@ -27,7 +27,7 @@ require __DIR__ . '/../includes/header.php';
           </select>
         </div>
         <div class="field-row">
-          <div class="field"><label>Preço (USD)</label><input type="number" step="0.01" name="price" required></div>
+          <div class="field"><label>Preço (<?= e(setting('currency', 'USD')) ?>)</label><input type="number" step="0.01" name="price" required></div>
           <div class="field"><label>Level</label><input type="text" name="level" placeholder="Ex: 52"></div>
         </div>
         <div class="field"><label>Idade da conta</label><input type="text" name="age_label" placeholder="Ex: 2 Years"></div>

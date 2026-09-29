@@ -39,7 +39,7 @@ require __DIR__ . '/../includes/header.php';
     <div class="chat-layout">
       <div class="panel">
         <h5 style="color:var(--accent-2);margin:0 0 6px"><?= e($offer['title']) ?></h5>
-        <div class="price" style="color:var(--accent-2);font-weight:800;margin-bottom:12px">Oferta: $<?= money((float) $offer['amount']) ?></div>
+        <div class="price" style="color:var(--accent-2);font-weight:800;margin-bottom:12px">Oferta: <?= currency_symbol() ?><?= money((float) $offer['amount']) ?></div>
         <div class="meta" style="color:var(--text-dim);font-size:.85rem;display:flex;justify-content:space-between">
           <span><?= e($offer['level'] ? 'Level: ' . $offer['level'] : '') ?></span>
           <span class="status <?= $offer['status'] === 'accepted' ? 'accepted' : ($offer['status'] === 'rejected' ? 'rejected' : 'pending') ?>"><?= e(ucfirst($offer['status'])) ?></span>

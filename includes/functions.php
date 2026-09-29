@@ -30,6 +30,13 @@ function money(float $value): string
     return number_format($value, 2, '.', ',');
 }
 
+function currency_symbol(): string
+{
+    $symbols = ['USD' => '$', 'BRL' => 'R$', 'EUR' => '€', 'GBP' => '£'];
+    $code = strtoupper(setting('currency', 'USD'));
+    return $symbols[$code] ?? ($code . ' ');
+}
+
 function csrf_token(): string
 {
     if (empty($_SESSION['csrf_token'])) {

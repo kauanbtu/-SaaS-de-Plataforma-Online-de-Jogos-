@@ -11,13 +11,39 @@ function current_user(): ?array
     if ($user === false) {
         $user = null;
         if (!empty($_SESSION['user_id'])) {
-            $stmt = $pdo->prepare('SELECT id, name, email, role, balance FROM users WHERE id = ?');
+            $stmt = $pdo->prepare('SELECT id, name, email, role, balance, must_change_password FROM users WHERE id = ?');
             $stmt->execute([$_SESSION['user_id']]);
             $user = $stmt->fetch() ?: null;
         }
     }
 
     return $user;
+}
+
+/**
+ * Enquanto must_change_password estiver ativo (caso da senha padrão
+ * documentada em docs/INSTALACAO.md), bloqueia qualquer página protegida e
+ * redireciona para a troca de senha — a senha publicada na documentação
+ * nunca fica valendo além do primeiro login.
+ *
+ * @param array<string, mixed> $user
+ */
+function enforce_password_policy(array $user): void
+{
+    if (empty($user['must_change_password'])) {
+        return;
+    }
+
+    $script = $_SERVER['SCRIPT_NAME'] ?? '';
+    $allowed = ['/pages/change-password.php', '/actions/change_password.php', '/actions/logout.php'];
+    foreach ($allowed as $path) {
+        if (str_ends_with($script, $path)) {
+            return;
+        }
+    }
+
+    flash('error', 'Por segurança, defina uma nova senha antes de continuar.');
+    redirect('/pages/change-password.php');
 }
 
 function require_login(string $redirectTo = '/pages/sign-in.php'): array
@@ -27,6 +53,7 @@ function require_login(string $redirectTo = '/pages/sign-in.php'): array
         flash('error', 'Você precisa entrar na sua conta para continuar.');
         redirect($redirectTo);
     }
+    enforce_password_policy($user);
     return $user;
 }
 

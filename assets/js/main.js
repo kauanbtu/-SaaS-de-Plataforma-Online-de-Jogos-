@@ -1,6 +1,8 @@
 // ===== Gamers Arena — Shared behavior =====
 document.addEventListener('DOMContentLoaded', () => {
 
+  const CURRENCY_SYMBOL = document.body.dataset.currencySymbol || '$';
+
   // Mobile menu toggle
   const burger = document.querySelector('.hamburger');
   const navLinks = document.querySelector('.nav-links');
@@ -79,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const subtotal = price;
     const discount = +(subtotal * discountRate).toFixed(2);
     const payable = +(subtotal - discount).toFixed(2);
-    subtotalEl.textContent = '$' + subtotal.toFixed(2);
-    discountEl.textContent = '$' + discount.toFixed(2);
-    payableEl.textContent = '$' + payable.toFixed(2);
+    subtotalEl.textContent = CURRENCY_SYMBOL + subtotal.toFixed(2);
+    discountEl.textContent = CURRENCY_SYMBOL + discount.toFixed(2);
+    payableEl.textContent = CURRENCY_SYMBOL + payable.toFixed(2);
     if (noteEl) noteEl.textContent = payable.toFixed(2);
   }
 

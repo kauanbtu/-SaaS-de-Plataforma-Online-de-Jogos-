@@ -17,18 +17,23 @@ if ($amount <= 0 || $method === '' || $accountRef === '') {
     flash('error', 'Preencha valor, método e conta para receber o saque.');
     redirect('/pages/payout.php');
 }
-if (bccomp((string) $amount, (string) $user['balance'], 2) === 1) {
+
+// Débito condicional e atômico: só é aplicado se o saldo no banco (não o
+// valor da sessão, que pode estar desatualizado) ainda cobrir o saque
+// no exato instante do UPDATE — impede que duas solicitações simultâneas
+// consigam sacar em dobro o mesmo saldo (rowCount() = 0 quando não cobre).
+$pdo->beginTransaction();
+$stmt = $pdo->prepare('UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?');
+$stmt->execute([$amount, $user['id'], $amount]);
+
+if ($stmt->rowCount() === 0) {
+    $pdo->rollBack();
     flash('error', 'Valor solicitado maior que o saldo disponível.');
     redirect('/pages/payout.php');
 }
 
-$pdo->beginTransaction();
-$stmt = $pdo->prepare(
-    'INSERT INTO withdrawals (user_id, amount, method, account_ref, status) VALUES (?, ?, ?, ?, "pending")'
-);
-$stmt->execute([$user['id'], $amount, $method, $accountRef]);
-$newBalance = bcsub((string) $user['balance'], (string) $amount, 2);
-$pdo->prepare('UPDATE users SET balance = ? WHERE id = ?')->execute([$newBalance, $user['id']]);
+$pdo->prepare('INSERT INTO withdrawals (user_id, amount, method, account_ref, status) VALUES (?, ?, ?, ?, "pending")')
+    ->execute([$user['id'], $amount, $method, $accountRef]);
 $pdo->commit();
 
 flash('success', 'Solicitação de saque enviada e está pendente de aprovação.');

@@ -11,14 +11,29 @@ automática de códigos digitais e checkout via Stripe.
 - **Gift cards e vouchers** — catálogo gerenciado pelo painel admin.
 - **Marketplace de IDs** — anúncios, sistema de ofertas e chat de negociação
   entre comprador e vendedor, com fechamento de pedido e saldo do vendedor.
-- **Entrega automática** — assim que o pagamento é confirmado, um código é
-  reservado do estoque e entregue ao comprador sem intervenção manual.
-- **Checkout via Stripe** — integração real (Checkout Sessions) via cURL; sem
-  chaves configuradas, roda em modo demonstração para testes locais.
+- **Entrega automática** — assim que o pagamento é confirmado (pelo retorno
+  do comprador ou pelo webhook, o que chegar primeiro), um código é
+  reservado do estoque e entregue sem intervenção manual.
+- **Checkout via Stripe, com verificação real** — integração via cURL (sem
+  SDK); cada pedido só é liberado depois de confirmar, direto com a Stripe,
+  que a sessão de pagamento *daquele pedido específico* foi paga no valor
+  certo — nunca a partir de dados vindos do navegador. Webhook
+  (`checkout.session.completed`) garante a confirmação mesmo se o
+  comprador fechar a aba antes de voltar ao site. Com a moeda BRL, o
+  **Pix** é oferecido automaticamente ao lado do cartão.
+- **Checkout bloqueado por padrão sem pagamento configurado** — sem Stripe
+  configurada, o site não entrega nada de graça: é preciso configurar a
+  Stripe ou ativar manualmente o modo demonstração em `/admin/settings.php`
+  (desligado por padrão, com aviso permanente no painel enquanto ativo).
 - **Painel administrativo** — produtos, estoque, moderação de anúncios,
-  aprovação de saques, gestão de usuários e configurações do site.
-- **Autenticação** — cadastro/login com senha hasheada (bcrypt), sessões e
-  proteção CSRF em todos os formulários.
+  aprovação de saques (débito de saldo atômico, à prova de solicitações
+  simultâneas), gestão de usuários e configurações do site.
+- **Autenticação** — cadastro/login com senha hasheada (bcrypt), sessões,
+  proteção CSRF em todos os formulários e troca de senha obrigatória no
+  primeiro login de qualquer conta com senha padrão/temporária.
+- **Recibos privados** — só o dono da compra (ou um admin) pode ver o
+  código entregue; não dá para acessar o recibo de outra pessoa trocando o
+  id na URL.
 
 ## Requisitos técnicos
 
@@ -41,8 +56,9 @@ mysql -u USUARIO -p BANCO < sql/schema.sql
 php -S localhost:8000       # para testar localmente
 ```
 
-Login administrativo padrão: `admin@example.com` / `ChangeMe123!` — troque
-após o primeiro acesso.
+Login administrativo padrão: `admin@example.com` / `ChangeMe123!` — o
+sistema **exige a troca dessa senha já no primeiro login**, antes de
+liberar qualquer outra página.
 
 ## Estrutura
 
@@ -50,8 +66,8 @@ após o primeiro acesso.
 index.php              → página inicial
 pages/                  → páginas públicas e da área logada
 admin/                  → painel administrativo
-actions/                → handlers de formulários (login, compra, ofertas, chat...)
-includes/                → conexão de banco, autenticação, helpers, cliente Stripe
+actions/                → handlers de formulários (login, compra, ofertas, chat, webhook da Stripe...)
+includes/                → conexão de banco, autenticação, helpers, cliente Stripe, confirmação de pagamento
 sql/schema.sql          → schema completo do banco (MySQL)
 assets/css, assets/js   → tema visual e interações de front-end
 docs/INSTALACAO.md      → guia de instalação detalhado

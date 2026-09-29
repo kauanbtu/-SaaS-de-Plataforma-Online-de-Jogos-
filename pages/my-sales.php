@@ -36,7 +36,7 @@ $offers = $stmt->fetchAll();
           <div class="flex between center" style="flex-wrap:wrap;gap:10px">
             <div>
               <h5><?= e($o['buyer_name']) ?> <?= e($o['title']) ?></h5>
-              <span class="price">$<?= money((float) $o['amount']) ?></span>
+              <span class="price"><?= currency_symbol() ?><?= money((float) $o['amount']) ?></span>
               <span class="status <?= $o['status'] === 'accepted' ? 'accepted' : ($o['status'] === 'rejected' ? 'rejected' : 'pending') ?>" style="margin-left:10px"><?= e(ucfirst($o['status'])) ?></span>
               <span class="time" style="margin-left:10px"><i class="fa-regular fa-clock"></i> <?= e(date('d/m/Y H:i', strtotime($o['created_at']))) ?></span>
             </div>

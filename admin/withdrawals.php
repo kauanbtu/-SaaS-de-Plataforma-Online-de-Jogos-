@@ -45,7 +45,7 @@ $withdrawals = $pdo->query(
           <?php foreach ($withdrawals as $w): ?>
           <tr>
             <td><?= e($w['user_name']) ?><br><small style="color:var(--text-dim)"><?= e($w['email']) ?></small></td>
-            <td>$<?= money((float) $w['amount']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $w['amount']) ?></td>
             <td><?= e($w['method']) ?></td>
             <td><?= e($w['account_ref']) ?></td>
             <td><span class="status <?= $w['status'] === 'paid' ? 'accepted' : ($w['status'] === 'rejected' ? 'rejected' : 'pending') ?>"><?= e(ucfirst($w['status'])) ?></span></td>

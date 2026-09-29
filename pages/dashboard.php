@@ -41,7 +41,7 @@ $recentOffers = $stmt->fetchAll();
       <div class="stat-card"><i class="fa-solid fa-id-badge"></i><div class="val"><?= $listingsCount ?></div><div class="lbl">IDs à Venda</div></div>
       <div class="stat-card"><i class="fa-solid fa-handshake"></i><div class="val"><?= $pendingOffers ?></div><div class="lbl">Ofertas Pendentes</div></div>
       <div class="stat-card"><i class="fa-solid fa-bag-shopping"></i><div class="val"><?= $openOrders ?></div><div class="lbl">Pedidos em Aberto</div></div>
-      <div class="stat-card"><i class="fa-solid fa-sack-dollar"></i><div class="val">$<?= money((float) $user['balance']) ?></div><div class="lbl">Saldo Disponível</div></div>
+      <div class="stat-card"><i class="fa-solid fa-sack-dollar"></i><div class="val"><?= currency_symbol() ?><?= money((float) $user['balance']) ?></div><div class="lbl">Saldo Disponível</div></div>
     </div>
 
     <div class="panel">
@@ -55,7 +55,7 @@ $recentOffers = $stmt->fetchAll();
           <?php foreach ($recentOffers as $o): ?>
           <tr>
             <td><?= e($o['title']) ?></td>
-            <td>$<?= money((float) $o['amount']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $o['amount']) ?></td>
             <td><span class="status <?= $o['status'] === 'accepted' ? 'accepted' : ($o['status'] === 'rejected' ? 'rejected' : 'pending') ?>"><?= e($o['status']) ?></span></td>
             <td><?= e(date('d/m/Y', strtotime($o['created_at']))) ?></td>
           </tr>

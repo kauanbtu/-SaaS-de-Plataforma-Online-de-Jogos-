@@ -21,7 +21,9 @@ INSERT INTO settings (`key`, `value`) VALUES
   ('currency', 'USD'),
   ('discount_rate', '0.15'),
   ('stripe_public_key', ''),
-  ('stripe_secret_key', '')
+  ('stripe_secret_key', ''),
+  ('stripe_webhook_secret', ''),
+  ('demo_mode', '0')
 ON DUPLICATE KEY UPDATE `key` = `key`;
 
 -- ===================================================================
@@ -34,6 +36,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   role          ENUM('customer','admin') NOT NULL DEFAULT 'customer',
   balance       DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  must_change_password TINYINT(1) NOT NULL DEFAULT 0,
   created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -104,6 +107,8 @@ CREATE TABLE IF NOT EXISTS orders (
   seller_id   INT UNSIGNED NOT NULL,
   amount      DECIMAL(12,2) NOT NULL,
   status      ENUM('awaiting_payment','paid','delivered','cancelled') NOT NULL DEFAULT 'awaiting_payment',
+  stripe_session_id VARCHAR(190) NULL,
+  payment_ref VARCHAR(190) NULL,
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (offer_id)   REFERENCES offers(id)   ON DELETE CASCADE,
   FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
@@ -162,6 +167,7 @@ CREATE TABLE IF NOT EXISTS purchases (
   discount        DECIMAL(12,2) NOT NULL DEFAULT 0,
   payable         DECIMAL(12,2) NOT NULL,
   payment_method  VARCHAR(40) NOT NULL DEFAULT 'stripe',
+  stripe_session_id VARCHAR(190) NULL,
   payment_ref     VARCHAR(190) NULL,
   status          ENUM('pending','paid','delivered','failed') NOT NULL DEFAULT 'pending',
   delivered_code  VARCHAR(255) NULL,
@@ -217,10 +223,12 @@ INSERT INTO categories (name, slug) VALUES
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 -- Usuário admin padrão: admin@example.com / senha: ChangeMe123!
--- (troque a senha assim que instalar — ver docs/INSTALACAO.md)
-INSERT INTO users (name, email, password_hash, role)
+-- must_change_password = 1 força a troca dessa senha publicada na
+-- documentação já no primeiro login (ver includes/auth.php) — ela nunca
+-- fica valendo em produção além do primeiro acesso.
+INSERT INTO users (name, email, password_hash, role, must_change_password)
 VALUES ('Administrador', 'admin@example.com',
-  '$2y$12$P8FYWTMAnGfXZ8Blwf05Wuop9Du/18ZJ1fRX/qgJpZpp3oVSV4VgG', 'admin')
+  '$2y$12$P8FYWTMAnGfXZ8Blwf05Wuop9Du/18ZJ1fRX/qgJpZpp3oVSV4VgG', 'admin', 1)
 ON DUPLICATE KEY UPDATE email = VALUES(email);
 
 INSERT INTO products (type, name, description, icon) VALUES

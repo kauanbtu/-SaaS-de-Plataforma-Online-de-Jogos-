@@ -32,7 +32,7 @@ $users = $pdo->query('SELECT * FROM users ORDER BY created_at DESC')->fetchAll()
             <td><?= e($u['name']) ?></td>
             <td><?= e($u['email']) ?></td>
             <td><span class="status <?= $u['role'] === 'admin' ? 'accepted' : 'pending' ?>"><?= e($u['role']) ?></span></td>
-            <td>$<?= money((float) $u['balance']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $u['balance']) ?></td>
             <td><?= e(date('d/m/Y', strtotime($u['created_at']))) ?></td>
             <td>
               <?php if ((int) $u['id'] !== (int) $admin['id']): ?>

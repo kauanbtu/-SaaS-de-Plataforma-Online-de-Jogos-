@@ -37,7 +37,7 @@ $listings = $pdo->query(
             <td><?= e($l['title']) ?></td>
             <td><?= e($l['category_name']) ?></td>
             <td><?= e($l['seller_name']) ?></td>
-            <td>$<?= money((float) $l['price']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $l['price']) ?></td>
             <td><span class="status <?= $l['status'] === 'active' ? 'accepted' : ($l['status'] === 'removed' ? 'rejected' : 'pending') ?>"><?= e($l['status']) ?></span></td>
             <td>
               <form method="post" action="" style="display:inline">

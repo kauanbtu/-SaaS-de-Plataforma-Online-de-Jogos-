@@ -40,7 +40,7 @@ require __DIR__ . '/../includes/header.php';
 
       <div>
         <div class="flex gap-10" style="margin-bottom:14px;flex-wrap:wrap">
-          <span class="stat-chip"><b><?= money((float) $listing['price']) ?> USD</b>Price</span>
+          <span class="stat-chip"><b><?= currency_symbol() ?><?= money((float) $listing['price']) ?></b>Price</span>
           <?php if ($listing['level']): ?><span class="stat-chip"><b><?= e($listing['level']) ?></b>Level</span><?php endif; ?>
           <span class="stat-chip"><b><?= e($listing['category_name']) ?></b>Categoria</span>
         </div>
@@ -62,7 +62,7 @@ require __DIR__ . '/../includes/header.php';
             <?= csrf_field() ?>
             <input type="hidden" name="listing_id" value="<?= (int) $listing['id'] ?>">
             <div class="field">
-              <label>Seu valor de oferta (USD)</label>
+              <label>Seu valor de oferta (<?= e(setting('currency', 'USD')) ?>)</label>
               <input type="number" step="0.01" name="amount" placeholder="Ex: 90" required>
             </div>
             <div class="field">

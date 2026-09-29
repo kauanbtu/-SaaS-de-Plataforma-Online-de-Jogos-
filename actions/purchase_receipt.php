@@ -2,6 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../includes/auth.php';
 
+$user = require_login('/pages/sign-in.php');
+
 $purchaseId = (int) ($_GET['id'] ?? 0);
 $stmt = $pdo->prepare(
     'SELECT pu.*, pp.label, p.name AS product_name FROM purchases pu
@@ -12,7 +14,9 @@ $stmt = $pdo->prepare(
 $stmt->execute([$purchaseId]);
 $purchase = $stmt->fetch();
 
-if (!$purchase) {
+// Recibo é dado pessoal (mostra o código entregue): só o dono da compra ou
+// um admin pode ver, nunca por tentativa de adivinhar o id na URL.
+if (!$purchase || ((int) $purchase['user_id'] !== (int) $user['id'] && $user['role'] !== 'admin')) {
     flash('error', 'Compra não encontrada.');
     redirect('/index.php');
 }
@@ -29,9 +33,9 @@ require __DIR__ . '/../includes/header.php';
     <?= flashes_render() ?>
     <div class="panel">
       <h3><?= e($purchase['product_name']) ?> — <?= e($purchase['label']) ?></h3>
-      <div class="summary-row"><span>Subtotal:</span><span>$<?= money((float) $purchase['amount']) ?></span></div>
-      <div class="summary-row"><span>Desconto:</span><span>$<?= money((float) $purchase['discount']) ?></span></div>
-      <div class="summary-row total"><span>Pago:</span><span>$<?= money((float) $purchase['payable']) ?></span></div>
+      <div class="summary-row"><span>Subtotal:</span><span><?= currency_symbol() ?><?= money((float) $purchase['amount']) ?></span></div>
+      <div class="summary-row"><span>Desconto:</span><span><?= currency_symbol() ?><?= money((float) $purchase['discount']) ?></span></div>
+      <div class="summary-row total"><span>Pago:</span><span><?= currency_symbol() ?><?= money((float) $purchase['payable']) ?></span></div>
 
       <div class="field" style="margin-top:20px">
         <label>Status</label>

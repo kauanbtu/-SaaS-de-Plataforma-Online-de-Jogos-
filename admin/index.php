@@ -29,7 +29,7 @@ $lowStock = $pdo->query(
       <div class="stat-card"><i class="fa-solid fa-users"></i><div class="val"><?= $totalUsers ?></div><div class="lbl">Usuários</div></div>
       <div class="stat-card"><i class="fa-solid fa-id-badge"></i><div class="val"><?= $totalListings ?></div><div class="lbl">Anúncios Ativos</div></div>
       <div class="stat-card"><i class="fa-solid fa-bag-shopping"></i><div class="val"><?= $totalOrders ?></div><div class="lbl">Pedidos Marketplace</div></div>
-      <div class="stat-card"><i class="fa-solid fa-sack-dollar"></i><div class="val">$<?= money($totalRevenue) ?></div><div class="lbl">Receita (Gift Card/Top-up)</div></div>
+      <div class="stat-card"><i class="fa-solid fa-sack-dollar"></i><div class="val"><?= currency_symbol() ?><?= money($totalRevenue) ?></div><div class="lbl">Receita (Gift Card/Top-up)</div></div>
     </div>
 
     <?php if ($pendingWithdrawals > 0): ?>
@@ -59,11 +59,23 @@ $lowStock = $pdo->query(
       </div>
     <?php endif; ?>
 
-    <?php if (!stripe_configured()): ?>
+    <?php if (setting('demo_mode', '0') === '1'): ?>
+    <div class="panel" style="border-color:var(--danger)">
+      <p style="margin:0"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i>
+      <b>Modo demonstração ATIVO</b> — todo pagamento sem Stripe configurada é confirmado sem cobrança real. Desative antes de divulgar o site.
+      <a href="<?= base_url('admin/settings.php') ?>" style="color:var(--accent)">Configurações »</a></p>
+    </div>
+    <?php elseif (!stripe_configured()): ?>
     <div class="panel" style="border-color:var(--accent-2)">
       <p style="margin:0"><i class="fa-solid fa-circle-info" style="color:var(--accent-2)"></i>
-      Chave da Stripe não configurada — as compras estão rodando em <b>modo demonstração</b> (sem cobrança real).
-      <a href="<?= base_url('admin/settings.php') ?>" style="color:var(--accent)">Configurar Stripe »</a></p>
+      Chave da Stripe não configurada — o checkout está <b>bloqueado</b> até você configurar pagamentos ou ativar o modo demonstração.
+      <a href="<?= base_url('admin/settings.php') ?>" style="color:var(--accent)">Configurar »</a></p>
+    </div>
+    <?php elseif (stripe_webhook_secret() === ''): ?>
+    <div class="panel" style="border-color:var(--accent-2)">
+      <p style="margin:0"><i class="fa-solid fa-circle-info" style="color:var(--accent-2)"></i>
+      Webhook da Stripe não configurado — se o comprador fechar a aba antes de voltar ao site, o pedido pode ficar pendente.
+      <a href="<?= base_url('admin/settings.php') ?>" style="color:var(--accent)">Configurar webhook »</a></p>
     </div>
     <?php endif; ?>
   </div>

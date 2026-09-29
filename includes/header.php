@@ -19,7 +19,7 @@ $active = $active ?? '';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 </head>
-<body>
+<body data-currency-symbol="<?= e(currency_symbol()) ?>">
 
 <header class="site-header">
   <nav class="nav">
@@ -42,6 +42,7 @@ $active = $active ?? '';
       <?php if ($__user['role'] === 'admin'): ?>
         <a href="<?= base_url('admin/index.php') ?>" class="icon-btn" title="Painel Admin"><i class="fa-solid fa-gauge"></i></a>
       <?php endif; ?>
+      <a href="<?= base_url('pages/change-password.php') ?>" class="icon-btn" title="Trocar senha"><i class="fa-solid fa-key"></i></a>
       <a href="<?= base_url('actions/logout.php') ?>" class="icon-btn" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
       <a href="<?= base_url('pages/dashboard.php') ?>" class="icon-btn"><i class="fa-solid fa-user"></i></a>
       <button class="hamburger"><i class="fa-solid fa-bars"></i></button>

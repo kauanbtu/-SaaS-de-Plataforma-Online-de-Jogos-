@@ -62,7 +62,7 @@ require __DIR__ . '/../includes/header.php';
               <label class="pill <?= $i === 0 ? 'selected' : '' ?>" style="display:block">
                 <input type="radio" name="package_id" value="<?= (int) $pkg['id'] ?>" <?= $i === 0 ? 'checked' : '' ?> style="display:none">
                 <?php if ($i === 0): ?><span class="check"><i class="fa-solid fa-check"></i></span><?php endif; ?>
-                <?= e($pkg['label']) ?> — $<?= money((float) $pkg['price']) ?>
+                <?= e($pkg['label']) ?> — <?= currency_symbol() ?><?= money((float) $pkg['price']) ?>
               </label>
               <?php endforeach; ?>
             </div>
@@ -71,7 +71,7 @@ require __DIR__ . '/../includes/header.php';
           <div class="panel">
             <h3>PURCHASE</h3>
             <p style="color:var(--text-dim);font-size:.85rem">Desconto automático de <?= (int) ($discountRate * 100) ?>% aplicado no checkout.</p>
-            <p class="summary-note">Pagamento processado com segurança via Stripe. Sem chave configurada, o checkout roda em modo demonstração.</p>
+            <p class="summary-note">Pagamento processado com segurança via Stripe<?= strtoupper(setting('currency', 'usd')) === 'BRL' ? ' (cartão ou Pix)' : '' ?>.</p>
             <button class="btn btn-accent btn-block"><i class="fa-solid fa-credit-card"></i> Buy Now</button>
           </div>
         </form>

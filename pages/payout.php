@@ -26,16 +26,16 @@ require __DIR__ . '/../includes/header.php';
   <div class="container">
     <?= flashes_render() ?>
     <div class="dash-grid" style="grid-template-columns:repeat(3,1fr)">
-      <div class="stat-card"><i class="fa-solid fa-wallet"></i><div class="val">$<?= money((float) $user['balance']) ?></div><div class="lbl">Saldo Disponível</div></div>
-      <div class="stat-card"><i class="fa-solid fa-hourglass-half"></i><div class="val">$<?= money($pending) ?></div><div class="lbl">Pendente</div></div>
-      <div class="stat-card"><i class="fa-solid fa-circle-check"></i><div class="val">$<?= money($paid) ?></div><div class="lbl">Total Sacado</div></div>
+      <div class="stat-card"><i class="fa-solid fa-wallet"></i><div class="val"><?= currency_symbol() ?><?= money((float) $user['balance']) ?></div><div class="lbl">Saldo Disponível</div></div>
+      <div class="stat-card"><i class="fa-solid fa-hourglass-half"></i><div class="val"><?= currency_symbol() ?><?= money($pending) ?></div><div class="lbl">Pendente</div></div>
+      <div class="stat-card"><i class="fa-solid fa-circle-check"></i><div class="val"><?= currency_symbol() ?><?= money($paid) ?></div><div class="lbl">Total Sacado</div></div>
     </div>
 
     <div class="panel" style="max-width:520px;margin-bottom:30px">
       <h3>Solicitar Saque</h3>
       <form method="post" action="<?= base_url('actions/withdraw.php') ?>">
         <?= csrf_field() ?>
-        <div class="field"><label>Valor (USD)</label><input type="number" step="0.01" name="amount" max="<?= (float) $user['balance'] ?>" required></div>
+        <div class="field"><label>Valor (<?= e(setting('currency', 'USD')) ?>)</label><input type="number" step="0.01" name="amount" max="<?= (float) $user['balance'] ?>" required></div>
         <div class="field"><label>Método de Recebimento</label>
           <select name="method"><option>PayPal</option><option>Transferência Bancária</option><option>Skrill</option></select>
         </div>
@@ -55,7 +55,7 @@ require __DIR__ . '/../includes/header.php';
           <?php foreach ($withdrawals as $w): ?>
           <tr>
             <td>#PY-<?= (int) $w['id'] ?></td>
-            <td>$<?= money((float) $w['amount']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $w['amount']) ?></td>
             <td><?= e($w['method']) ?></td>
             <td><span class="status <?= $w['status'] === 'paid' ? 'accepted' : ($w['status'] === 'rejected' ? 'rejected' : 'pending') ?>"><?= e(ucfirst($w['status'])) ?></span></td>
             <td><?= e(date('d/m/Y', strtotime($w['created_at']))) ?></td>

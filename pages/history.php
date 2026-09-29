@@ -46,7 +46,7 @@ require __DIR__ . '/../includes/header.php';
             <td><?= e($r['tipo']) ?></td>
             <td><?= e($r['item']) ?></td>
             <td><?= e($r['pessoa']) ?></td>
-            <td>$<?= money((float) $r['amount']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $r['amount']) ?></td>
             <td><span class="status <?= in_array($r['status'], ['paid','delivered']) ? 'accepted' : ($r['status'] === 'cancelled' || $r['status'] === 'failed' ? 'rejected' : 'pending') ?>"><?= e($r['status']) ?></span></td>
             <td><?= e(date('d/m/Y', strtotime($r['created_at']))) ?></td>
           </tr>

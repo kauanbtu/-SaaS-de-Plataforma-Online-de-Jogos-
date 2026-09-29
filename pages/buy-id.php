@@ -92,7 +92,7 @@ $listings = $stmt->fetchAll();
           <div class="thumb" style="background:linear-gradient(135deg,#457b9d,#1d3557)"></div>
           <div class="body">
             <h5><?= e($l['title']) ?></h5>
-            <div class="price">Price: <?= money((float) $l['price']) ?> USD</div>
+            <div class="price">Price: <?= currency_symbol() ?><?= money((float) $l['price']) ?></div>
             <div class="meta"><span><?= e($l['category_name']) ?></span><?php if ($l['level']): ?><span>Level: <?= e($l['level']) ?></span><?php endif; ?><?php if ($l['age_label']): ?><span><?= e($l['age_label']) ?></span><?php endif; ?></div>
           </div>
           <a href="<?= base_url('pages/id-details.php?id=' . $l['id']) ?>" class="btn btn-accent btn-sm">Make Offer »</a>

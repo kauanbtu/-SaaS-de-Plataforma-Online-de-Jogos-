@@ -78,7 +78,7 @@ foreach ($pdo->query('SELECT pp.*, (SELECT COUNT(*) FROM product_stock ps WHERE 
           <?php foreach ($packagesByProduct[$p['id']] ?? [] as $pkg): ?>
           <tr>
             <td><?= e($pkg['label']) ?></td>
-            <td>$<?= money((float) $pkg['price']) ?></td>
+            <td><?= currency_symbol() ?><?= money((float) $pkg['price']) ?></td>
             <td><?= (int) $pkg['in_stock'] ?></td>
             <td>
               <a href="<?= base_url('admin/stock.php?package_id=' . $pkg['id']) ?>" class="btn btn-outline btn-sm">Estoque</a>
@@ -99,7 +99,7 @@ foreach ($pdo->query('SELECT pp.*, (SELECT COUNT(*) FROM product_stock ps WHERE 
         <input type="hidden" name="action" value="create_package">
         <input type="hidden" name="product_id" value="<?= (int) $p['id'] ?>">
         <div class="field"><label>Novo pacote — rótulo</label><input type="text" name="label" placeholder="Ex: 60 UC" required></div>
-        <div class="field"><label>Preço (USD)</label><input type="number" step="0.01" name="price" required></div>
+        <div class="field"><label>Preço (<?= e(setting('currency', 'USD')) ?>)</label><input type="number" step="0.01" name="price" required></div>
         <button class="btn btn-outline">Adicionar Pacote</button>
       </form>
     </div>
